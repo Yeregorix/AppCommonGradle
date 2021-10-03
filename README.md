@@ -20,11 +20,11 @@ Two built-in dependency configurations are included:
 ```groovy
 plugins {
     id 'java-library'
-    id 'net.smoofyuniverse.appcommon-gradle' version '1.0.0'
+    id 'net.smoofyuniverse.appcommon-gradle' version '1.0.1'
 }
 
 dependencies {
-    appcommon 'net.smoofyuniverse:appcommon:1.3.0'
+    appcommon 'net.smoofyuniverse:appcommon:1.3.1'
     export 'org.spongepowered:noise:2.0.0-SNAPSHOT'
 }
 
