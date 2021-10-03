@@ -1,0 +1,126 @@
+/*
+ * Copyright (c) 2021 Hugo Dupanloup (Yeregorix)
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+plugins {
+    id 'java-gradle-plugin'
+    id 'maven-publish'
+    id 'com.gradle.plugin-publish' version '0.16.0'
+    id 'net.smoofyuniverse.dependency-exporter' version '1.0.2'
+}
+
+group 'net.smoofyuniverse'
+version '1.0.0'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
+    withJavadocJar()
+    withSourcesJar()
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = "utf-8"
+}
+
+gradlePlugin {
+    plugins {
+        AppCommonGradle {
+            id = 'net.smoofyuniverse.appcommon-gradle'
+            displayName = 'AppCommonGradle'
+            description = 'Gradle plugin for AppCommon based applications.'
+            implementationClass = 'net.smoofyuniverse.common.AppCommonPlugin'
+        }
+    }
+}
+
+pluginBundle {
+    website = 'https://github.com/Yeregorix/AppCommonGradle'
+    vcsUrl = 'https://github.com/Yeregorix/AppCommonGradle.git'
+    tags = ['application', 'appcommon', 'javafx']
+}
+
+repositories {
+    gradlePluginPortal()
+}
+
+dependencies {
+    implementation 'net.smoofyuniverse:DependencyExporter:1.0.2'
+    implementation 'com.google.code.gson:gson:2.8.8'
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = 'appcommon-gradle'
+            from components.java
+
+            pom {
+                name = 'AppCommonGradle'
+                packaging = 'jar'
+                description = "Export Gradle dependencies to JSON file."
+                url = 'https://github.com/Yeregorix/AppCommonGradle'
+
+                scm {
+                    connection = 'scm:git:https://github.com/Yeregorix/AppCommonGradle.git'
+                    developerConnection = 'scm:git:https://github.com/Yeregorix/AppCommonGradle.git'
+                    url = 'https://github.com/Yeregorix/AppCommonGradle'
+                }
+
+                licenses {
+                    license {
+                        name = 'MIT License'
+                        url = 'https://opensource.org/licenses/MIT'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = 'Yeregorix'
+                        name = 'Hugo Dupanloup'
+                        email = 'yeregorix@smoofyuniverse.net'
+                    }
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            url = version.endsWith('SNAPSHOT') ?
+                    "https://oss.sonatype.org/content/repositories/snapshots/"
+                    : "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+
+            credentials {
+                username findProperty('ossrhUsername')
+                password findProperty('ossrhPassword')
+            }
+        }
+    }
+}
+
+if (project.hasProperty("signing.keyId")) {
+    apply plugin: 'signing'
+    signing {
+        sign publishing.publications.mavenJava
+    }
+}
