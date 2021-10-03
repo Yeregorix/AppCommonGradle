@@ -58,7 +58,6 @@ public class AppCommonPlugin implements Plugin<Project> {
 		exportConfigs.register("application", config -> {
 			config.getPath().convention("dep/application.json");
 			config.getConfig().convention(export);
-			config.getSkipWhenEmpty().convention(true);
 		});
 
 		// Generate config task
