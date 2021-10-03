@@ -24,11 +24,10 @@ plugins {
     id 'java-gradle-plugin'
     id 'maven-publish'
     id 'com.gradle.plugin-publish' version '0.16.0'
-    id 'net.smoofyuniverse.dependency-exporter' version '1.0.2'
 }
 
 group 'net.smoofyuniverse'
-version '1.0.0'
+version '1.0.1'
 
 java {
     toolchain {
@@ -64,7 +63,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'net.smoofyuniverse:DependencyExporter:1.0.2'
+    implementation 'net.smoofyuniverse:DependencyExporter:1.0.4'
     implementation 'com.google.code.gson:gson:2.8.8'
 }
 
