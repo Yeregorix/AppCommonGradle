@@ -24,6 +24,7 @@ package net.smoofyuniverse.common;
 
 import com.google.gson.stream.JsonWriter;
 import org.gradle.api.model.ObjectFactory;
+import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Optional;
@@ -35,6 +36,7 @@ import java.nio.file.Path;
 
 public class ApplicationConfig {
 	private final Property<String> application, name, title, version;
+	private final ListProperty<String> dependencies;
 
 	@Inject
 	public ApplicationConfig(ObjectFactory factory) {
@@ -42,6 +44,9 @@ public class ApplicationConfig {
 		this.name = factory.property(String.class);
 		this.title = factory.property(String.class);
 		this.version = factory.property(String.class);
+
+		this.dependencies = factory.listProperty(String.class);
+		this.dependencies.convention((Iterable<String>) null);
 	}
 
 	@Input
@@ -83,6 +88,16 @@ public class ApplicationConfig {
 		this.version.set(value);
 	}
 
+	@Input
+	@Optional
+	public ListProperty<String> getDependencies() {
+		return this.dependencies;
+	}
+
+	public void setDependencies(Iterable<? extends String> values) {
+		this.dependencies.set(values);
+	}
+
 	public void write(Path file) throws IOException {
 		try (JsonWriter w = new JsonWriter(Files.newBufferedWriter(file))) {
 			w.setIndent("  ");
@@ -109,6 +124,14 @@ public class ApplicationConfig {
 		if (this.version.isPresent()) {
 			w.name("version");
 			w.value(this.version.get());
+		}
+
+		if (this.dependencies.isPresent()) {
+			w.name("dependencies");
+			w.beginArray();
+			for (String dep : this.dependencies.get())
+				w.value(dep);
+			w.endArray();
 		}
 
 		w.endObject();
