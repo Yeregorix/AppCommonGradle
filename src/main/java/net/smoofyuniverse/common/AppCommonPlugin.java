@@ -55,14 +55,10 @@ public class AppCommonPlugin implements Plugin<Project> {
 		NamedDomainObjectProvider<Configuration> appcommon = configs.register("appcommon"), export = configs.register("export");
 
 		// Configure default dependency export
-		project.afterEvaluate(p -> {
-			if (exportConfigs.findByName("application") == null) {
-				exportConfigs.register("application", config -> {
-					config.setPath("dep/application.json");
-					config.getConfig().set(export);
-					config.setSkipWhenEmpty(true);
-				});
-			}
+		exportConfigs.register("application", config -> {
+			config.getPath().convention("dep/application.json");
+			config.getConfig().convention(export);
+			config.getSkipWhenEmpty().convention(true);
 		});
 
 		// Generate config task
