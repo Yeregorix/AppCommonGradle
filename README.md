@@ -20,7 +20,7 @@ Two built-in dependency configurations are included:
 ```groovy
 plugins {
     id 'java-library'
-    id 'net.smoofyuniverse.appcommon-gradle' version '1.0.1'
+    id 'net.smoofyuniverse.appcommon-gradle' version '1.0.2'
 }
 
 dependencies {
