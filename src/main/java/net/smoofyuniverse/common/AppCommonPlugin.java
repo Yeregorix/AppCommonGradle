@@ -38,6 +38,7 @@ import org.gradle.jvm.tasks.Jar;
 import java.io.File;
 
 public class AppCommonPlugin implements Plugin<Project> {
+	public static final String GROUP_NAME = "appcommon";
 
 	@Override
 	public void apply(Project project) {
@@ -64,6 +65,7 @@ public class AppCommonPlugin implements Plugin<Project> {
 		TaskProvider<GenerateConfigTask> generateConfig = project.getTasks().register("generateAppConfig", GenerateConfigTask.class, task -> {
 			task.getConfiguration().set(appConfig);
 			task.getOutputDirectory().set(project.getLayout().getBuildDirectory().dir("generated/appcommon/config"));
+			task.setGroup(GROUP_NAME);
 		});
 
 		project.getPlugins().withType(JavaLibraryPlugin.class, plugin -> {
@@ -73,37 +75,50 @@ public class AppCommonPlugin implements Plugin<Project> {
 		});
 
 		project.getPlugins().withType(JavaPlugin.class, plugin -> {
+			Jar jar = (Jar) project.getTasks().getByName(JavaPlugin.JAR_TASK_NAME);
+
 			// Include generated config
 			project.getExtensions().getByType(SourceSetContainer.class).named(SourceSet.MAIN_SOURCE_SET_NAME, sourceSet -> {
 				sourceSet.getResources().srcDir(generateConfig.map(DefaultTask::getOutputs));
+			});
+
+			// Generate release tasks
+			project.getTasks().register("githubRelease", GenerateReleaseTask.class, task -> {
+				task.getIncludeDate().set(false);
+				task.getIncludeSize().set(false);
+				task.getFile().set(jar.getArchiveFile());
+				task.dependsOn(jar);
+				task.setGroup(GROUP_NAME);
+			});
+			project.getTasks().register("simpleRelease", GenerateReleaseTask.class, task -> {
+				task.getFile().set(jar.getArchiveFile());
+				task.dependsOn(jar);
+				task.setGroup(GROUP_NAME);
 			});
 
 			// Shade AppCommon and configure manifest
 			project.afterEvaluate(p -> {
 				Configuration compileClasspath = p.getConfigurations().getByName(JavaPlugin.COMPILE_CLASSPATH_CONFIGURATION_NAME);
 
-				p.getTasks().named(JavaPlugin.JAR_TASK_NAME, task -> {
-					Jar jar = (Jar) task;
-
-					for (File dep : appcommon.get()) {
-						if (compileClasspath.contains(dep)) {
-							jar.from(p.zipTree(dep)).exclude("META-INF", "META-INF/**");
-						}
+				for (File dep : appcommon.get()) {
+					if (compileClasspath.contains(dep)) {
+						jar.from(p.zipTree(dep)).exclude("META-INF", "META-INF/**");
 					}
+				}
 
-					Attributes attrs = jar.getManifest().getAttributes();
-					attrs.put("Main-Class", "net.smoofyuniverse.common.Main");
-					attrs.put("Launcher-Agent-Class", "net.smoofyuniverse.common.Main");
-				});
+				Attributes attrs = jar.getManifest().getAttributes();
+				attrs.put("Main-Class", "net.smoofyuniverse.common.Main");
+				attrs.put("Launcher-Agent-Class", "net.smoofyuniverse.common.Main");
 			});
 		});
 
 		// Dummy Java agent
-		project.getTasks().register("dummyAgentJar", Jar.class, jar -> {
-			jar.getArchiveBaseName().set("DummyAgent");
-			jar.getArchiveVersion().set("");
-			jar.getDestinationDirectory().set(project.getLayout().getBuildDirectory().dir("generated/appcommon"));
-			jar.getManifest().getAttributes().put("Premain-Class", "net.smoofyuniverse.common.Main");
+		project.getTasks().register("dummyAgentJar", Jar.class, task -> {
+			task.getArchiveBaseName().set("DummyAgent");
+			task.getArchiveVersion().set("");
+			task.getDestinationDirectory().set(project.getLayout().getBuildDirectory().dir("generated/appcommon"));
+			task.getManifest().getAttributes().put("Premain-Class", "net.smoofyuniverse.common.Main");
+			task.setGroup(GROUP_NAME);
 		});
 	}
 }
