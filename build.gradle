@@ -1,7 +1,7 @@
 plugins {
     id 'java-gradle-plugin'
     id 'maven-publish'
-    id 'com.gradle.plugin-publish' version '0.16.0'
+    id 'com.gradle.plugin-publish' version '1.2.1'
     id 'com.diffplug.spotless' version '6.22.0'
 }
 
@@ -16,8 +16,8 @@ java {
     withSourcesJar()
 }
 
-tasks.withType(JavaCompile) {
-    options.encoding = "utf-8"
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
 }
 
 gradlePlugin {
@@ -55,36 +55,30 @@ spotless {
 }
 
 publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifactId = 'appcommon-gradle'
-            from components.java
+    publications.withType(MavenPublication).configureEach {
+        pom {
+            name = 'AppCommonGradle'
+            description = 'Gradle plugin for AppCommon based applications.'
+            url = 'https://github.com/Yeregorix/AppCommonGradle'
 
-            pom {
-                name = 'AppCommonGradle'
-                packaging = 'jar'
-                description = "Export Gradle dependencies to JSON file."
+            scm {
+                connection = 'scm:git:https://github.com/Yeregorix/AppCommonGradle.git'
+                developerConnection = 'scm:git:https://github.com/Yeregorix/AppCommonGradle.git'
                 url = 'https://github.com/Yeregorix/AppCommonGradle'
+            }
 
-                scm {
-                    connection = 'scm:git:https://github.com/Yeregorix/AppCommonGradle.git'
-                    developerConnection = 'scm:git:https://github.com/Yeregorix/AppCommonGradle.git'
-                    url = 'https://github.com/Yeregorix/AppCommonGradle'
+            licenses {
+                license {
+                    name = 'MIT License'
+                    url = 'https://opensource.org/licenses/MIT'
                 }
+            }
 
-                licenses {
-                    license {
-                        name = 'MIT License'
-                        url = 'https://opensource.org/licenses/MIT'
-                    }
-                }
-
-                developers {
-                    developer {
-                        id = 'Yeregorix'
-                        name = 'Hugo Dupanloup'
-                        email = 'yeregorix@smoofyuniverse.net'
-                    }
+            developers {
+                developer {
+                    id = 'Yeregorix'
+                    name = 'Hugo Dupanloup'
+                    email = 'yeregorix@smoofyuniverse.net'
                 }
             }
         }
@@ -104,9 +98,9 @@ publishing {
     }
 }
 
-if (project.hasProperty("signing.keyId")) {
+if (project.hasProperty('signing.keyId')) {
     apply plugin: 'signing'
     signing {
-        sign publishing.publications.mavenJava
+        sign publishing.publications
     }
 }
