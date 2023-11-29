@@ -2,7 +2,7 @@ plugins {
     id 'java-gradle-plugin'
     id 'maven-publish'
     id 'com.gradle.plugin-publish' version '1.2.1'
-    id 'com.diffplug.spotless' version '6.22.0'
+    id 'com.diffplug.spotless' version '6.23.1'
 }
 
 group 'net.smoofyuniverse'
@@ -42,7 +42,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'net.smoofyuniverse:DependencyExporter:1.0.6'
+    implementation 'net.smoofyuniverse:DependencyExporter:1.0.7'
     implementation 'org.openjfx:javafx-plugin:0.1.0'
     implementation 'com.google.code.gson:gson:2.10.1'
 }

@@ -79,7 +79,7 @@ public abstract class GenerateReleaseTask extends DefaultTask {
 
 			if (getIncludeSha1().get()) {
 				w.name("sha1");
-				w.value(Util.toHexString(Util.digest(file)));
+				w.value(Util.toHexString(Util.digest(file, "sha1")));
 			}
 
 			w.endObject();
