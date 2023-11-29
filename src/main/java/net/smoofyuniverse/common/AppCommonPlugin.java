@@ -34,14 +34,21 @@ import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.jvm.tasks.Jar;
+import org.openjfx.gradle.JavaFXOptions;
+import org.openjfx.gradle.JavaFXPlugin;
 
 import java.io.File;
+import java.util.List;
 
 public class AppCommonPlugin implements Plugin<Project> {
 	public static final String GROUP_NAME = "appcommon";
 
 	@Override
 	public void apply(Project project) {
+		// JavaFX
+		project.getPlugins().apply(JavaFXPlugin.class);
+		JavaFXOptions javaFXOptions = (JavaFXOptions) project.getExtensions().getByName("javafx");
+
 		// Dependency exporter
 		project.getPlugins().apply(DependencyExporterPlugin.class);
 		NamedDomainObjectContainer<ExportConfig> exportConfigs = (NamedDomainObjectContainer<ExportConfig>) project.getExtensions().getByName("dependencyExport");
@@ -54,6 +61,10 @@ public class AppCommonPlugin implements Plugin<Project> {
 		// Dependencies management
 		ConfigurationContainer configs = project.getConfigurations();
 		NamedDomainObjectProvider<Configuration> appcommon = configs.register("appcommon"), export = configs.register("export");
+
+		// Configure default JavaFX options
+		javaFXOptions.setVersion("21.0.1");
+		javaFXOptions.setModules(List.of("javafx.controls"));
 
 		// Configure default dependency export
 		exportConfigs.register("application", config -> {

@@ -43,6 +43,7 @@ repositories {
 
 dependencies {
     implementation 'net.smoofyuniverse:DependencyExporter:1.0.6'
+    implementation 'org.openjfx:javafx-plugin:0.1.0'
     implementation 'com.google.code.gson:gson:2.10.1'
 }
 
