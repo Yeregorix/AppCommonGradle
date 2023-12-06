@@ -41,6 +41,7 @@ public abstract class GenerateReleaseTask extends DefaultTask {
 		getIncludeDate().convention(true);
 		getIncludeSize().convention(true);
 		getIncludeSha1().convention(true);
+		getIncludeSha256().convention(true);
 	}
 
 	@Input
@@ -51,6 +52,9 @@ public abstract class GenerateReleaseTask extends DefaultTask {
 
 	@Input
 	public abstract Property<Boolean> getIncludeSha1();
+
+	@Input
+	public abstract Property<Boolean> getIncludeSha256();
 
 	@TaskAction
 	public void generate() throws Exception {
@@ -79,7 +83,12 @@ public abstract class GenerateReleaseTask extends DefaultTask {
 
 			if (getIncludeSha1().get()) {
 				w.name("sha1");
-				w.value(Util.toHexString(Util.digest(file, "sha1")));
+				w.value(Util.toHexString(Util.digest(file, "SHA-1")));
+			}
+
+			if (getIncludeSha256().get()) {
+				w.name("sha256");
+				w.value(Util.toHexString(Util.digest(file, "SHA-256")));
 			}
 
 			w.endObject();
