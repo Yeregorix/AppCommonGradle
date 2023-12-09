@@ -28,6 +28,7 @@ import org.gradle.api.*;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.java.archives.Attributes;
+import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.plugins.JavaLibraryPlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.tasks.SourceSet;
@@ -93,19 +94,15 @@ public class AppCommonPlugin implements Plugin<Project> {
 				sourceSet.getResources().srcDir(generateConfig.map(DefaultTask::getOutputs));
 			});
 
-			// Generate release tasks
-			project.getTasks().register("githubRelease", GenerateReleaseTask.class, task -> {
-				task.getIncludeDate().set(false);
-				task.getIncludeSize().set(false);
+			// Generate release task
+			TaskProvider<GenerateReleaseTask> generateRelease = project.getTasks().register("generateAppRelease", GenerateReleaseTask.class, task -> {
 				task.getFile().set(jar.getArchiveFile());
 				task.dependsOn(jar);
 				task.setGroup(GROUP_NAME);
 			});
-			project.getTasks().register("simpleRelease", GenerateReleaseTask.class, task -> {
-				task.getFile().set(jar.getArchiveFile());
-				task.dependsOn(jar);
-				task.setGroup(GROUP_NAME);
-			});
+
+			Task build = project.getTasks().getByName(JavaBasePlugin.BUILD_TASK_NAME);
+			build.dependsOn(generateRelease);
 
 			// Shade AppCommon and configure manifest
 			project.afterEvaluate(p -> {

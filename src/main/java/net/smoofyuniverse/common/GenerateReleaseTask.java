@@ -38,8 +38,8 @@ import java.time.Instant;
 public abstract class GenerateReleaseTask extends DefaultTask {
 
 	public GenerateReleaseTask() {
-		getIncludeDate().convention(true);
-		getIncludeSize().convention(true);
+		getIncludeDate().convention(false);
+		getIncludeSize().convention(false);
 		getIncludeSha1().convention(true);
 		getIncludeSha256().convention(true);
 	}
