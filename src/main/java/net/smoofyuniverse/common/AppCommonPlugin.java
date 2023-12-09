@@ -122,14 +122,5 @@ public class AppCommonPlugin implements Plugin<Project> {
 				attrs.put("Launcher-Agent-Class", "net.smoofyuniverse.common.Main");
 			});
 		});
-
-		// Dummy Java agent
-		project.getTasks().register("dummyAgentJar", Jar.class, task -> {
-			task.getArchiveBaseName().set("DummyAgent");
-			task.getArchiveVersion().set("");
-			task.getDestinationDirectory().set(project.getLayout().getBuildDirectory().dir("generated/appcommon"));
-			task.getManifest().getAttributes().put("Premain-Class", "net.smoofyuniverse.common.Main");
-			task.setGroup(GROUP_NAME);
-		});
 	}
 }
