@@ -24,7 +24,7 @@ plugins {
 }
 
 dependencies {
-    appcommon 'net.smoofyuniverse:appcommon:1.4.0-SNAPSHOT'
+    appcommon 'net.smoofyuniverse:appcommon:1.4.0'
     export 'org.spongepowered:noise:2.0.0-SNAPSHOT'
 }
 
